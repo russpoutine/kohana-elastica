@@ -2,6 +2,9 @@
 
 class Kohana_Elastica
 {
+	
+	protected static $vendor_class_root; 
+	
 
 	/**
 	 * Registers autoloader method for Elastica classes
@@ -12,8 +15,15 @@ class Kohana_Elastica
 	 */
 	public static function register_autoloader($module_path)
 	{
-		set_include_path(get_include_path() . PATH_SEPARATOR . $module_path . 'vendor/Elastica');
+		// get path to Elastica's files
+		self::$vendor_class_root = $module_path . "/vendor/Elastica/lib/";
 		
+		// check that path exists
+		if ( ! file_exists(self::$vendor_class_root) ) {
+			throw new Exception( sprintf("Elastica path %s not found", self::$vendor_class_root) );
+		}
+		
+		// register autoloader
 		spl_autoload_register('Kohana_Elastica::autoload');		
 	}
 
@@ -27,8 +37,9 @@ class Kohana_Elastica
 	 */
 	public static function autoload($class)
 	{
-		$file = str_replace('_', '/', $class) . '.php';
-		
+		$filename = str_replace('_', '/', $class) . '.php';
+		$file = self::$vendor_class_root . '/' . $filename;
+
 		require_once $file;
 	}
 
