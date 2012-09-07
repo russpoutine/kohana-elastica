@@ -42,5 +42,21 @@ class Kohana_Elastica
 
 		require_once $file;
 	}
+	
+	
+	/**
+	 * @param string $config
+	 * 
+	 * @return Elastica_Config
+	 */
+	public static function get_client( $config_name = 'default' )
+	{
+		$configs = Kohana::$config->load( 'elastica' );
+		$config = $configs->get( $config_name );
+		
+		if ( null === $config ) throw new Exception( sprintf( 'Elastica config [%s] not found', $config_name ) );
+		
+		return new Elastica_Client( $config );
+	}
 
 }
